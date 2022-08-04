@@ -1,8 +1,8 @@
-from flask import Flask, request, redirect, render_template, flash
+from flask import Flask, request, redirect, render_template, flash, jsonify, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import db, connect_db, Pet
-from forms import AddPetForm
+from forms import AddPetForm, EditPetForm
 
 app = Flask(__name__)
 
@@ -53,10 +53,22 @@ def add_pet():
     else:
         return render_template('add_pet.html', form=form)
 
-@app.route('/edit_pet/<int:pet_id>')
+@app.route('/pet/<int:pet_id>/edit', methods=["GET", "POST"])
 def edit_pet_form(pet_id):
     """Shows pets list"""
 
-    pet = Pet.query.got_or_404(pet_id)
-    
-    return render_template('edit_pet.html', pet=pet)
+    pet = Pet.query.get_or_404(pet_id)
+    form = EditPetForm(obj=pet)
+    print("PHOTO_URL: ", pet.photo_url)
+
+    if form.validate_on_submit():
+        print("PHOTO_URL post: ", pet.photo_url)
+
+        pet.photo_url = form.photo_url.data
+        pet.notes = form.notes.data
+        pet.available = form.available.data
+        db.session.commit()
+        flash(f"{pet.name}: profile updated")
+        return redirect("/")
+    else:
+        return render_template('edit_pet.html', form=form)
