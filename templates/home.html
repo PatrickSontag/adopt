@@ -1,7 +1,20 @@
+{% extends 'base.html' %}
+
 {% block title %}Pets{% endblock %}
 
 {% block content %}
-<div>Adopt a Pet</div>
+<div class="header">Adopt a Pet</div>
 
+{% for pet in pets %}
+<div class="pet-container">
+    <img class="pet-img" src="{{ pet.photo_url }}">
+    {% if pet.available %}
+    <div class="pet-available">Available</div>
+    {% endif %}
+    <div class="pet-name">{{ pet.name }}</div>
+    <!-- <div class="pet-species">Species: {{ pet.species }}</div>
+    <div class="pet-age">Age: {{ pet.age }}</div> -->
+</div>
+{% endfor %}
 
 {% endblock %}
